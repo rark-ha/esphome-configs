@@ -1,65 +1,44 @@
-
-# Brilliant Smart White Light
-
 substitutions:
-  hostname: "your_hostname_here"
-  staticip: "xxx.xxx.xxx.xxx"
-  gateway: "xxx.xxx.xxx.xxx"
-  subnet: "xxx.xxx.xxx.xxx"
-  wifissid: "xxxxx"
-  password: "xxxxx
-  restore_mode: "ALWAYS_OFF"
+  device_name: brilliant_smart_white_light_1
+  staticip: 192.168.x.x
 
 esphome:
-  name: "${hostname}"
+  name: ${device_name}
   platform: ESP8266
   board: esp01_1m
 
 wifi:
-  ssid: ${wifissid}
-  password: ${password}
-  fast_connect: True
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
   manual_ip:
-    # Set this to the IP of the ESP
-    static_ip: "${staticip}"
-    # Set this to the IP address of the router.
-    gateway: "${gateway}"
-    # The subnet of the network. 255.255.255.0 works for most home networks.
-    subnet: "${subnet}"
+    static_ip: ${device_ip}
+    gateway: 192.168.x.x
+    subnet: 255.255.255.0
 
-# After 1 minute of unsuccessful WiFi connection attempts, the ESP will start a WiFi hotspot (with the credentials from your configuration)
-captive_portal:
-
-# Enable logging
 logger:
 
-# Enable Web server
-web_server:
-  port: 80
-
-# Enable Home Assistant API
 api:
-  password: ${password}
+  password: !secret api_password
 
 ota:
-  password: ${password}
-
-time:
-  - platform: homeassistant
-    id: homeassistant_time
+  password: !secret ota_password
 
 binary_sensor:
   - platform: status
-    name: "${hostname} Status"
+    name: "${device_name} Status"
 
 light:
   - platform: monochromatic
-    name: "${hostname} White Light"
+    name: "${device_name}"
     id: bslightwg1
     output: output_component1
-    restore_mode: ${restore_mode}
+    restore_mode: ALWAYS_ON
 
 output:
   - platform: esp8266_pwm
     id: output_component1
     pin: GPIO12
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
